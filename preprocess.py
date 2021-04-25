@@ -28,4 +28,3 @@ for i, datafile in enumerate(datafiles):
     if i % 10 == 0:
         print(i, len(datafiles))
     process(datafile)
-
