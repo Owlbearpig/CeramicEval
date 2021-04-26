@@ -38,15 +38,18 @@ def ref_ind_err(ref_ind, d):
     return dd * (ref_ind - 1) / (d + dd)
 
 
-for material in materials:
+fig = plt.figure()
+
+for i, material in enumerate(materials):
     for resultfile in resultfiles:
         if material in str(resultfile):
             deg = str(resultfile).split('_')[-2]
             freq, ref_ind = load_material_data(resultfile)
             dn = ref_ind_err(ref_ind, d[material])
 
+            plt.subplot(2, 5, i+1)
             plt.plot(freq, ref_ind, label=f'{material}_{deg}')
             plt.fill_between(freq, ref_ind - dn, ref_ind + dn, alpha=0.5)
-
     plt.legend()
-    plt.show()
+
+plt.show()
