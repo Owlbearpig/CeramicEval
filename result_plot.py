@@ -10,13 +10,19 @@ def load_material_data(path):
 
     freq_dict_key = [key for key in df.keys() if 'freq' in key][0]
     ref_ind_key = [key for key in df.keys() if 'ref_ind' in key][0]
+    alpha_key = [key for key in df.keys() if 'alpha' in key][0]
+    alpha_err_key = [key for key in df.keys() if 'delta_A' in key][0]
     # dn_key = [key for key in df.keys() if "delta_N" in key][0]
 
     frequencies = np.array(df[freq_dict_key])
     ref_ind = np.array(df[ref_ind_key])
+    alpha = np.array(df[alpha_key])
+    alha_err = np.array(df[alpha_err_key])
     # dn = np.array(df[dn_key])
 
-    return frequencies, ref_ind
+    data = {'freq': frequencies, 'ref_ind': ref_ind, 'alpha': alpha, 'alpha_err': alha_err}
+
+    return data
 
 
 base = Path('CeramicTeraLyzerResult')
@@ -37,6 +43,19 @@ dd = 5
 def ref_ind_err(ref_ind, d):
     return dd * (ref_ind - 1) / (d + dd)
 
+material = 'ZrO3'
+for resultfile in resultfiles:
+    if material in str(resultfile):
+        deg = str(resultfile).split('_')[-2]
+        zro3_res = load_material_data(resultfile)
+        freq, alpha, alpha_err = zro3_res['freq'], zro3_res['alpha'], zro3_res['alpha_err']
+
+        plt.plot(freq, alpha, label=f'{material}_{deg}')
+        plt.fill_between(freq, alpha - alpha_err, alpha + alpha_err, alpha=0.5)
+plt.legend()
+plt.show()
+
+exit()
 
 fig = plt.figure()
 
@@ -44,12 +63,15 @@ for i, material in enumerate(materials):
     for resultfile in resultfiles:
         if material in str(resultfile):
             deg = str(resultfile).split('_')[-2]
-            freq, ref_ind = load_material_data(resultfile)
+            res_data = load_material_data(resultfile)
+            freq, ref_ind, alpha = res_data['freq'], res_data['ref_ind'], res_data['alpha']
+
             dn = ref_ind_err(ref_ind, d[material])
 
             plt.subplot(2, 5, i+1)
             plt.plot(freq, ref_ind, label=f'{material}_{deg}')
             plt.fill_between(freq, ref_ind - dn, ref_ind + dn, alpha=0.5)
     plt.legend()
+
 
 plt.show()
