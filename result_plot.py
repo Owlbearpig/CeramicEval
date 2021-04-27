@@ -33,9 +33,9 @@ resultfiles = [os.path.join(root, name)
                for name in files
                if name.endswith('.csv')]
 
-materials = ['Al2O3_1', 'Al2O3_2', 'Al2O3_D', 'QMQM', 'ZrO3', 'Req1', 'Req2', 'Req3', 'Req4', 'Req5']
+materials = ['Al2O3_1', 'Al2O3_2', 'Al2O3_D', 'QMQM', 'ZrO3', 'Req1', 'Req2', 'Req3', 'Req4', 'Req5', 'R2shift']
 d = {'Al2O3_1': 2702, 'Al2O3_2': 3091, 'Al2O3_D': 2819, 'QMQM': 5035, 'ZrO3': 4928,
-     'Req1': 2481, 'Req2': 1499, 'Req3': 1738, 'Req4': 3089, 'Req5': 2717}
+     'Req1': 2481, 'Req2': 1499, 'Req3': 1738, 'Req4': 3089, 'Req5': 2717, 'R2shift': 1499}
 
 dd = 5
 
@@ -55,7 +55,6 @@ for resultfile in resultfiles:
 plt.legend()
 plt.show()
 
-exit()
 
 fig = plt.figure()
 
@@ -68,7 +67,7 @@ for i, material in enumerate(materials):
 
             dn = ref_ind_err(ref_ind, d[material])
 
-            plt.subplot(2, 5, i+1)
+            plt.subplot(2, 6, i+1)
             plt.plot(freq, ref_ind, label=f'{material}_{deg}')
             plt.fill_between(freq, ref_ind - dn, ref_ind + dn, alpha=0.5)
     plt.legend()
