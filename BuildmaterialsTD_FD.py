@@ -25,7 +25,7 @@ c=300  ##um/ps
 d=3091 #um thickness of sample
 x=0
 
-t=1850
+t=900
 
 for i in dirs:
     if "ref" in i:
@@ -225,8 +225,8 @@ for k in range(idx):
     indx2=(freq_s>= 0.05) & (freq_s<= 0.25) ####  fit range
 #    xx1=list(freq_s).index(0.12)
 #    xx2=list(freq_s).index(0.55)
-    xx=28
-    yy=80
+    xx=30
+    yy=128
     f=freq_s[xx:yy]
     y=diff_ph[xx:yy]
 
@@ -325,7 +325,7 @@ print("n at 0.12 THz =" ,np.round(n_mean[24],3), "+/-", np.round(n_STD[24],4) )
 print("absorption at 0.3 THz =" ,np.round(A_mean[60],3), "+/-",np.round(A_STD[60],3),"cm-1" )
 print("absorption at 0.12 THz =" ,np.round(A_mean[24],3), "+/-", np.round(A_STD[24],3),"cm-1" )
 #A_Coeff1=(np.abs(np.imag(n_sam1))*freq*1E12*4*np.pi)/c
-
+plt.show()
 #
 #
 
