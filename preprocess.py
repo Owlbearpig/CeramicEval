@@ -9,9 +9,9 @@ def process(datafile):
     data[:,1] -= np.mean(data[:,1])
     np.savetxt(output_dir / datafile, data)
 
-base = Path('CeramicSamples')
+base = Path('SiWaferTestFlipped')
 
-output_dir = Path('Processed')
+output_dir = Path('Processed2')
 # (Re)Create folder structure for output
 for root, dirs, files in os.walk(base):
     for dir_ in dirs:
