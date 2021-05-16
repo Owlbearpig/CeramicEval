@@ -2,10 +2,11 @@ import os
 from pathlib import Path
 import numpy as np
 import pandas
-import matplotlib.pyplot as plt
+import matplotlib.pylab as plt
 import pandas as pd
 import pathlib
 from pathlib import Path
+
 
 def export_csv(data, path):
     df = pd.DataFrame(data=data)
@@ -51,12 +52,15 @@ def ref_ind_err(ref_ind, d):
 material = 'SiWafer'
 for resultfile in resultfiles:
     if material in str(resultfile):
-        deg = str(resultfile).split('_')[-2]
+        #deg = str(resultfile).split('_')[-2]
         SiWafer_res = load_material_data(resultfile)
         freq, alpha, alpha_err = SiWafer_res['freq'], SiWafer_res['alpha'], SiWafer_res['alpha_err']
 
-        plt.plot(freq*10**-12, alpha, label=f'{material}_{deg}')
+        plt.plot(freq*10**-12, alpha, label=f'{material}')
         plt.fill_between(freq*10**-12, alpha - alpha_err, alpha + alpha_err, alpha=0.5)
+
+plt.xlabel('Frequency (THz)')
+plt.ylabel(r'$\alpha \ (cm^{-1})$')
 plt.legend()
 plt.show()
 
