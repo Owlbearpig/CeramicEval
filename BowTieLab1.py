@@ -92,3 +92,49 @@ for i, material in enumerate(materials):
     plt.ylabel('Refractive index')
 
 plt.show()
+
+def fft(t, y):
+    delta = t[1] - t[0]
+    Y = np.fft.rfft(y * len(y), axis=0)
+    freqs = np.fft.rfftfreq(len(t), delta)
+    ft = 10 * np.log10(np.abs(Y))
+    #plt.plot(t, y)
+    #plt.plot(freqs[1:], ft[1:])
+    #print(np.mean(np.abs(Y))/np.sqrt(np.var(np.abs(Y))))
+    #plt.xlim((0, 0.75))
+    #plt.show()
+
+    return freqs[1:], Y[1:]
+
+datapath = Path('BowTieSetup/SiWaferTest')
+
+# find result files
+reffiles = [os.path.join(root, name)
+               for root, dirs, files in os.walk(datapath)
+               for name in files
+               if name.endswith('.txt') and 'Ref' in str(name)]
+
+ref1 = np.loadtxt(reffiles[0])
+data_pnts = len(ref1[:, 0]) // 2
+freqs, Y = fft(ref1[:,0], ref1[:,1])
+spectra = np.zeros((len(reffiles), data_pnts), dtype=complex)
+
+for i, reffile in enumerate(reffiles):
+    ref = np.loadtxt(reffile)
+    t, y = ref[:,0], ref[:,1]
+    freqs, Y = fft(t, y)
+    spectra[i, :] = Y
+
+SNR = np.zeros(data_pnts)
+for i in range(data_pnts):
+    freq_ampl = np.abs(spectra[:, i])
+    SNR[i] = np.mean(freq_ampl)/np.sqrt(np.var(freq_ampl))
+
+plt.plot(freqs, 10*np.log10(SNR))
+plt.xlim((0, 2))
+plt.xlabel('Frequency (THz)')
+plt.ylabel('SNR (dB)')
+plt.show()
+
+
+
