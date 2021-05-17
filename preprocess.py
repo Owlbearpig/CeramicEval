@@ -9,9 +9,9 @@ def process(datafile):
     data[:,1] -= np.mean(data[:,1])
     np.savetxt(output_dir / datafile, data)
 
-base = Path('SiWaferTestFlipped')
+base = Path('HHI')
 
-output_dir = Path('Processed2')
+output_dir = Path('HHI_offsetcorrected')
 # (Re)Create folder structure for output
 for root, dirs, files in os.walk(base):
     for dir_ in dirs:
