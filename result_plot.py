@@ -24,10 +24,10 @@ def load_material_data(path):
     frequencies = np.array(df[freq_dict_key])
     ref_ind = np.array(df[ref_ind_key])
     alpha = np.array(df[alpha_key])
-    alha_err = np.array(df[alpha_err_key])
+    alpha_err = np.array(df[alpha_err_key])
     ref_ind_err = np.array(df[ref_ind_err_key])
 
-    data = {'freq': frequencies, 'ref_ind': ref_ind, 'alpha': alpha, 'alpha_err': alha_err, 'ref_ind_err': ref_ind_err}
+    data = {'freq': frequencies, 'ref_ind': ref_ind, 'alpha': alpha, 'alpha_err': alpha_err, 'ref_ind_err': ref_ind_err}
 
     return data
 
@@ -49,15 +49,16 @@ def ref_ind_err(ref_ind, d):
     dd = 5
     return dd * (ref_ind - 1) / (d + dd)
 
-material = 'ZrO3'
+material = 'Req2'
 for resultfile in resultfiles:
     if material in str(resultfile):
         deg = str(resultfile).split('_')[-2]
         zro3_res = load_material_data(resultfile)
         freq, alpha, alpha_err = zro3_res['freq'], zro3_res['alpha'], zro3_res['alpha_err']
+        ref_ind, ref_ind_err = zro3_res['ref_ind'], zro3_res['ref_ind_err']
 
-        plt.plot(freq, alpha, label=f'{material}_{deg}')
-        plt.fill_between(freq, alpha - alpha_err, alpha + alpha_err, alpha=0.5)
+        plt.plot(freq, ref_ind, label=f'{Path(resultfile).name}')
+        plt.fill_between(freq, ref_ind - ref_ind_err, ref_ind + ref_ind_err, alpha=0.5)
 plt.legend()
 plt.show()
 
@@ -70,6 +71,13 @@ def moving_average(x, w):
 for i, material in enumerate(materials):
     export_data = {}
     for resultfile in resultfiles:
+        if '1482' in str(resultfile):
+            continue
+        if '1420' in str(resultfile):
+            continue
+        if '1474' in str(resultfile):
+            continue
+
         if material in str(resultfile):
             deg = str(resultfile).split('_')[-2]
             res_data = load_material_data(resultfile)
@@ -78,23 +86,25 @@ for i, material in enumerate(materials):
             #ref_ind = moving_average(ref_ind, 10)
 
             dn = res_data['ref_ind_err']
+            an = res_data['alpha_err']
             #dn = ref_ind_err(ref_ind, d[material]) # 'error from thickness uncertainty'
 
             plt.subplot(2, 5, i+1)
-            plt.plot(freq[:len(ref_ind)], ref_ind, label=f'{material}_{deg}')
-            plt.fill_between(freq[:len(ref_ind)], ref_ind - dn[:len(ref_ind)], ref_ind + dn[:len(ref_ind)], alpha=0.5)
+            plt.plot(freq[:len(alpha)], alpha, label=f'{material}_{deg}')
+            plt.fill_between(freq[:len(alpha)], alpha - an[:len(alpha)], alpha + an[:len(alpha)], alpha=0.5)
             if 'freq' not in export_data.keys():
-                export_data['freq'] = freq[:len(ref_ind)]
-            export_data['ref_ind_' + deg] = ref_ind
-            export_data['ref_ind_err_' + deg] = dn[:len(ref_ind)]
+                export_data['freq'] = freq[:len(alpha)]
+            export_data['alpha_' + deg] = alpha
+            export_data['alpha_err_' + deg] = an[:len(alpha)]
+    plt.legend()
 
     if material == 'Req2':
         export_data['freq'] = export_data['freq'][::2]
         export_data['freq'] = export_data['freq'][:452]
-        export_data['ref_ind_0deg'] = export_data['ref_ind_0deg'][::2]
-        export_data['ref_ind_0deg'] = export_data['ref_ind_0deg'][:452]
-        export_data['ref_ind_err_0deg'] = export_data['ref_ind_err_0deg'][::2]
-        export_data['ref_ind_err_0deg'] = export_data['ref_ind_err_0deg'][:452]
+        export_data['alpha_0deg'] = export_data['alpha_0deg'][::2]
+        export_data['alpha_0deg'] = export_data['alpha_0deg'][:452]
+        export_data['alpha_err_0deg'] = export_data['alpha_err_0deg'][::2]
+        export_data['alpha_err_0deg'] = export_data['alpha_err_0deg'][:452]
     else:
         for key in export_data:
             if len(export_data['freq']) != len(export_data[key]):
@@ -106,9 +116,6 @@ for i, material in enumerate(materials):
         print(key)
         print(len(export_data[key]))
 
-    export_csv(export_data, str(material)+'.csv')
-
-    plt.legend()
-
+    #export_csv(export_data, str(material)+'_abs.csv')
 
 plt.show()
